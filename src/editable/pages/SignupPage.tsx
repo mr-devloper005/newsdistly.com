@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Globe2, Megaphone, Newspaper } from 'lucide-react'
 import { buildPageMetadata } from '@/lib/seo'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { EditableLocalSignupForm } from '@/editable/components/EditableLocalAuthForms'
@@ -12,21 +13,37 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function SignupPage() {
   return (
     <EditableSiteShell>
-      <main className="bg-[#f7f4ef] text-[#111]">
-        <section className="mx-auto grid min-h-[calc(100vh-12rem)] max-w-[var(--editable-container)] border-x border-black bg-white lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="flex flex-col justify-center border-b border-black p-7 sm:p-12 lg:border-b-0 lg:border-r lg:p-16">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#c92f2f]">Create account</p>
-            <h1 className="editorial-serif mt-3 text-4xl font-black">{pagesContent.auth.signup.formTitle}</h1>
-            <EditableLocalSignupForm />
-            <p className="mt-5 border-t border-black pt-5 text-sm text-black/65">Already have an account? <Link href="/login" className="font-black text-[#c92f2f] underline-offset-4 hover:underline">{pagesContent.auth.signup.loginCta}</Link></p>
-          </div>
-          <div className="flex flex-col justify-center bg-[#171717] p-8 text-white sm:p-12 lg:p-16">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-[#f34a43]">{pagesContent.auth.signup.badge}</p>
-            <h2 className="editorial-brand mt-5 max-w-xl text-6xl font-black leading-[0.92] tracking-[-0.055em] sm:text-8xl">{pagesContent.auth.signup.title}</h2>
-            <p className="mt-6 max-w-lg text-sm font-semibold leading-8 text-white/68">{pagesContent.auth.signup.description}</p>
+      <main className="bg-[var(--slot4-page-bg)] text-[var(--slot4-page-text)]">
+        <section className="mx-auto max-w-[var(--editable-container)] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <div className="editable-panel grid overflow-hidden lg:grid-cols-[1.02fr_0.98fr]">
+            <div className="bg-white p-7 sm:p-12">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--slot4-accent)]">Create your workspace</p>
+              <h1 className="mt-3 text-4xl font-black tracking-[-0.05em]">{pagesContent.auth.signup.formTitle}</h1>
+              <EditableLocalSignupForm />
+              <p className="mt-5 border-t border-black/10 pt-5 text-sm text-black/65">Already have an account? <Link href="/login" className="font-black text-[var(--slot4-accent)] underline-offset-4 hover:underline">{pagesContent.auth.signup.loginCta}</Link></p>
+            </div>
+            <div className="bg-[var(--slot4-dark-bg)] p-8 text-white sm:p-12">
+              <div className="editable-chip border-white/15 bg-white/8 text-white">{pagesContent.auth.signup.badge}</div>
+              <h2 className="mt-6 max-w-xl text-5xl font-black leading-[0.9] tracking-[-0.07em] sm:text-7xl">{pagesContent.auth.signup.title}</h2>
+              <p className="mt-6 max-w-lg text-base font-semibold leading-8 text-white/72">{pagesContent.auth.signup.description}</p>
+              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+                <SignupFeature icon={Megaphone} label="Create campaigns" />
+                <SignupFeature icon={Newspaper} label="Publish releases" />
+                <SignupFeature icon={Globe2} label="Track visibility" />
+              </div>
+            </div>
           </div>
         </section>
       </main>
     </EditableSiteShell>
+  )
+}
+
+function SignupFeature({ icon: Icon, label }: { icon: typeof Megaphone; label: string }) {
+  return (
+    <div className="border border-white/12 bg-white/5 p-4">
+      <Icon className="h-5 w-5 text-[var(--slot4-accent)]" />
+      <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-white/78">{label}</p>
+    </div>
   )
 }
