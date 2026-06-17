@@ -10,18 +10,34 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--slot4-page-bg) !important;
   color: var(--slot4-page-text) !important;
-  background-image: none !important;
+  background-image:
+    radial-gradient(circle at top left, rgba(217, 79, 43, 0.08), transparent 22%),
+    radial-gradient(circle at top right, rgba(0, 85, 104, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(244, 239, 232, 0.98) 0%, rgba(255, 253, 249, 1) 44%, rgba(238, 243, 246, 1) 100%) !important;
   font-feature-settings: "kern", "liga", "clig", "calt";
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.24) 1px, transparent 1px);
+  background-size: 120px 120px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent 72%);
+}
+
 *::selection {
-  background: var(--editorial-red) !important;
+  background: #005568 !important;
   color: #fff !important;
   -webkit-text-fill-color: #fff;
 }
 
 *::-moz-selection {
-  background: var(--editorial-red) !important;
+  background: #005568 !important;
   color: #fff !important;
 }
 
@@ -38,6 +54,74 @@ body {
 .editorial-brand {
   font-style: italic;
   letter-spacing: -0.065em;
+}
+
+.editable-reveal {
+  animation: editable-fade-up 0.7s ease both;
+}
+
+.editable-reveal-delay {
+  animation: editable-fade-up 0.9s ease both;
+}
+
+.editable-panel {
+  border: 1px solid rgba(16, 33, 47, 0.12);
+  background: rgba(255, 253, 249, 0.88);
+  box-shadow: 0 24px 70px rgba(16, 33, 47, 0.08);
+  backdrop-filter: blur(12px);
+}
+
+.editable-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(16, 33, 47, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  padding: 0.6rem 0.95rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.editable-field {
+  height: 3.35rem;
+  border: 1px solid rgba(16, 33, 47, 0.15);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 0 1rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--slot4-page-text);
+  outline: none;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+.editable-field::placeholder,
+.editable-area::placeholder {
+  color: rgba(16, 33, 47, 0.42);
+}
+
+.editable-field:focus,
+.editable-area:focus,
+.editable-select:focus {
+  border-color: var(--slot4-lavender);
+  box-shadow: 0 0 0 3px rgba(0, 85, 104, 0.12);
+}
+
+.editable-area,
+.editable-select {
+  border: 1px solid rgba(16, 33, 47, 0.15);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 0.95rem 1rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--slot4-page-text);
+  outline: none;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+.editable-area {
+  min-height: 7rem;
 }
 
 .editorial-rule { border-color: color-mix(in srgb, var(--editorial-ink) 22%, transparent); }
@@ -84,4 +168,22 @@ input, textarea, select, button { border-radius: 0 !important; }
 @media (max-width: 640px) {
   .article-content { font-size: 1.05rem; line-height: 1.72; }
   .article-content p:first-of-type::first-letter { font-size: 3.9em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editable-reveal,
+  .editable-reveal-delay {
+    animation: none;
+  }
+}
+
+@keyframes editable-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

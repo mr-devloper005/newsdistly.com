@@ -8,40 +8,42 @@ export const globalContent = {
     baseUrl: slot4BrandConfig.baseUrl,
   },
   nav: {
-    tagline: 'News, media, and public updates',
+    tagline: 'Press release distribution, newsroom visibility, and campaign reach',
     primaryLinks: [
-      { label: 'Latest Updates', href: '/updates' },
-      { label: 'News Media', href: '/updates?category=news-media' },
-      { label: 'Press Releases', href: '/updates?category=press-release' },
+      { label: 'Home', href: '/' },
+      { label: 'Newsroom', href: '/press-release' },
+      { label: 'Search', href: '/search' },
       { label: 'Contact', href: '/contact' },
     ],
     actions: {
-      primary: { label: 'Browse updates', href: '/updates' },
-      secondary: { label: 'Submit', href: '/contact' },
+      primary: { label: 'Launch Campaign', href: '/create' },
+      secondary: { label: 'Talk to Strategy', href: '/contact' },
     },
   },
   footer: {
-    tagline: 'Newsroom updates and distributed media',
-    description: 'A flexible media distribution surface for announcements, press coverage, public updates, and dynamic news categories.',
+    tagline: 'Media distribution built for brands, agencies, and PR teams',
+    description: 'Plan campaigns, publish press releases, extend newsroom reach, and keep every distribution touchpoint in one premium media operations surface.',
     columns: [
       {
-        title: 'Explore',
+        title: 'Distribution',
         links: [
-          { label: 'Latest Updates', href: '/updates' },
-          { label: 'News Media', href: '/updates?category=news-media' },
-          { label: 'Business News', href: '/updates?category=business' },
+          
           { label: 'Press Releases', href: '/updates?category=press-release' },
+          
+          { label: 'Recent Search Results', href: '/search' },
         ],
       },
       {
-        title: 'Site',
+        title: 'Platform',
         links: [
           { label: 'About', href: '/about' },
           { label: 'Contact', href: '/contact' },
+          { label: 'Create Campaign', href: '/create' },
+          { label: 'Login', href: '/login' },
         ],
       },
     ],
-    bottomNote: 'Built for fast, flexible, and category-led media distribution.',
+    bottomNote: 'Trusted media outreach, press release publishing, and campaign visibility without backend changes.',
   },
   commonLabels: {
     readMore: 'Read more',

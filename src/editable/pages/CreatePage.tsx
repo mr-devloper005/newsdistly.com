@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, FileText, ImageIcon, Lock, PlusCircle, Send, Sparkles } from 'lucide-react'
+import { ArrowRight, CheckCircle2, FileText, ImageIcon, Lock, PlusCircle, RadioTower, Send, Sparkles } from 'lucide-react'
 import { SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { useEditableLocalAuthSession } from '@/editable/components/EditableLocalAuthForms'
@@ -32,7 +32,8 @@ const taskIcon: Record<string, typeof FileText> = {
   sbm: ArrowRight,
 }
 
-const fieldClass = 'rounded-2xl border border-[var(--editable-border)] bg-white px-4 py-3 text-sm font-bold text-[var(--editable-page-text,#2f1d16)] outline-none transition placeholder:text-current/35 focus:border-current'
+const fieldClass = 'editable-field'
+const areaClass = 'editable-area'
 
 const saveDraft = (draft: DraftPost) => {
   try {
@@ -85,7 +86,7 @@ export default function CreatePage() {
     return (
       <EditableSiteShell>
         <main className="min-h-screen bg-[var(--editable-page-bg,#fff7ee)] px-4 py-16 text-[var(--editable-page-text,#2f1d16)] sm:px-6 lg:px-8">
-          <section className="mx-auto grid max-w-5xl gap-8 rounded-[2.8rem] border border-[var(--editable-border)] bg-white/75 p-7 shadow-[0_30px_90px_rgba(15,23,42,0.08)] md:grid-cols-[0.9fr_1.1fr] md:p-10">
+          <section className="editable-panel mx-auto grid max-w-5xl gap-8 p-7 md:grid-cols-[0.9fr_1.1fr] md:p-10">
             <div className="flex h-full min-h-72 items-center justify-center rounded-[2rem] bg-[var(--editable-page-text,#2f1d16)] text-[var(--editable-page-bg,#fff7ee)]">
               <Lock className="h-20 w-20 opacity-80" />
             </div>
@@ -108,11 +109,21 @@ export default function CreatePage() {
     <EditableSiteShell>
       <main className="min-h-screen bg-[var(--editable-page-bg,#fff7ee)] text-[var(--editable-page-text,#2f1d16)]">
         <section className="mx-auto max-w-[var(--editable-container)] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-          <div className="grid gap-8 rounded-[2.8rem] border border-[var(--editable-border)] bg-white/75 p-6 shadow-[0_30px_90px_rgba(15,23,42,0.08)] backdrop-blur lg:grid-cols-[0.85fr_1.15fr] lg:p-10">
+          <div className="editable-panel grid gap-8 p-6 lg:grid-cols-[0.85fr_1.15fr] lg:p-10">
             <aside>
               <p className="text-xs font-black uppercase tracking-[0.28em] opacity-55">{pagesContent.create.hero.badge}</p>
               <h1 className="mt-5 text-5xl font-black leading-[0.92] tracking-[-0.08em] sm:text-7xl">{pagesContent.create.hero.title}</h1>
               <p className="mt-6 max-w-xl text-base font-semibold leading-8 opacity-70">{pagesContent.create.hero.description}</p>
+              <div className="mt-8 grid gap-4 border-t border-black/10 pt-8 sm:grid-cols-2">
+                {[
+                  'Lead with a strong campaign title and industry category.',
+                  'Add summary language that sounds ready for publishers.',
+                  'Use the body for release detail, launch context, and follow-up notes.',
+                  'Keep visuals, source URLs, and brand context ready for the archive cards.',
+                ].map((item) => (
+                  <div key={item} className="border border-black/10 bg-white px-4 py-4 text-sm font-bold text-black/68">{item}</div>
+                ))}
+              </div>
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {enabledTasks.map((item) => {
                   const Icon = taskIcon[item.key] || FileText
@@ -128,24 +139,42 @@ export default function CreatePage() {
               </div>
             </aside>
 
-            <form onSubmit={submit} className="rounded-[2.2rem] border border-[var(--editable-border)] bg-[var(--editable-page-bg,#fff7ee)] p-5 sm:p-7">
+            <form onSubmit={submit} className="rounded-[2.2rem] border border-black/10 bg-[var(--editable-page-bg,#fff7ee)] p-5 sm:p-7">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.22em] opacity-50">Create {activeTask?.label || 'post'}</p>
                   <h2 className="mt-1 text-3xl font-black tracking-[-0.06em]">{pagesContent.create.formTitle}</h2>
                 </div>
-                <span className="rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em]">{session.name}</span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em]"><RadioTower className="h-4 w-4 text-[var(--slot4-accent)]" /> {session.name}</span>
               </div>
 
               <div className="mt-6 grid gap-4">
-                <input className={fieldClass} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Post title" required />
+                <label className="grid gap-2 text-sm font-black text-[var(--slot4-page-text)]">
+                  Campaign title
+                  <input className={fieldClass} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Example: Global product launch distribution" required />
+                </label>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input className={fieldClass} value={category} onChange={(event) => setCategory(event.target.value)} placeholder="Category" />
-                  <input className={fieldClass} value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Website or source URL" />
+                  <label className="grid gap-2 text-sm font-black text-[var(--slot4-page-text)]">
+                    Industry or category
+                    <input className={fieldClass} value={category} onChange={(event) => setCategory(event.target.value)} placeholder="Technology, finance, retail..." />
+                  </label>
+                  <label className="grid gap-2 text-sm font-black text-[var(--slot4-page-text)]">
+                    Website or source URL
+                    <input className={fieldClass} value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://brand.com/newsroom" />
+                  </label>
                 </div>
-                <input className={fieldClass} value={image} onChange={(event) => setImage(event.target.value)} placeholder="Featured image URL" />
-                <textarea className={`${fieldClass} min-h-24`} value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="Short summary" required />
-                <textarea className={`${fieldClass} min-h-48`} value={body} onChange={(event) => setBody(event.target.value)} placeholder="Main content, details, notes, or description" required />
+                <label className="grid gap-2 text-sm font-black text-[var(--slot4-page-text)]">
+                  Featured image URL
+                  <input className={fieldClass} value={image} onChange={(event) => setImage(event.target.value)} placeholder="https://cdn.example.com/launch-hero.jpg" />
+                </label>
+                <label className="grid gap-2 text-sm font-black text-[var(--slot4-page-text)]">
+                  Release summary
+                  <textarea className={areaClass} value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="Write the short campaign summary that should appear on archive cards and discovery surfaces." required />
+                </label>
+                <label className="grid gap-2 text-sm font-black text-[var(--slot4-page-text)]">
+                  Campaign body
+                  <textarea className={`${areaClass} min-h-56`} value={body} onChange={(event) => setBody(event.target.value)} placeholder="Add the full release, newsroom details, distribution context, reach notes, and any follow-up information." required />
+                </label>
               </div>
 
               {created ? (
