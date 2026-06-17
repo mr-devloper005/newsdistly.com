@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
-import { ArrowRight, Bookmark, BriefcaseBusiness, Building2, Camera, Download, FileText, Filter, Image as ImageIcon, MapPin, Megaphone, Search, Newspaper, UserRound } from 'lucide-react'
+import { ArrowRight, Bookmark, BriefcaseBusiness, Building2, Camera, Download, FileText, Filter, Image as ImageIcon, MapPin, Megaphone, RadioTower, Search, Newspaper, UserRound } from 'lucide-react'
 import { buildTaskMetadata } from '@/lib/seo'
 import { CATEGORY_OPTIONS, normalizeCategory } from '@/lib/categories'
-import { fetchPaginatedTaskPosts, buildPostUrl } from '@/lib/task-data'
+import { fetchPaginatedTaskPosts, buildPostUrl, fetchTaskPosts } from '@/lib/task-data'
 import { getTaskConfig, SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import type { SiteFeedPagination, SitePost } from '@/lib/site-connector'
 import { taskPageMetadata } from '@/config/site.content'
@@ -45,6 +45,10 @@ const getField = (post: SitePost, keys: string[]) => {
   }
   return ''
 }
+const getArchiveHref = (task: TaskKey, basePath: string, post: SitePost) => post.slug ? `${basePath}/${post.slug}` : '#'
+const getStatus = (post: SitePost) => getField(post, ['status', 'distributionStatus', 'approvalStatus', 'state'])
+const getPublisher = (post: SitePost) => getField(post, ['publisher', 'brand', 'company', 'organization', 'source'])
+const getReach = (post: SitePost) => getField(post, ['reach', 'reachStats', 'impressions', 'coverage', 'audience'])
 
 function pageHref(basePath: string, category: string, page: number) {
   const params = new URLSearchParams()
@@ -79,7 +83,8 @@ export async function EditableTaskArchiveRoute({
   const category = resolved.category ? normalizeCategory(resolved.category) : 'all'
   const taskConfig = getTaskConfig(task)
   const { posts, pagination } = await fetchPaginatedTaskPosts(task, { page, limit: 24, category })
-  return <TaskArchiveView task={task} posts={posts} pagination={pagination} category={category} basePath={basePath || taskConfig?.route || `/${task}`} />
+  const fallbackPosts = !posts.length && category === 'all' && task === 'mediaDistribution' ? await fetchTaskPosts(task, 24) : []
+  return <TaskArchiveView task={task} posts={posts.length ? posts : fallbackPosts} pagination={pagination} category={category} basePath={basePath || taskConfig?.route || `/${task}`} />
 }
 
 export function TaskArchiveView({ task, posts, pagination, category, basePath }: { task: TaskKey; posts: SitePost[]; pagination: SiteFeedPagination; category: string; basePath: string }) {
@@ -103,6 +108,7 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
   if (task === 'mediaDistribution' || task === 'article') {
     return (
       <EditorialArchive
+        task={task}
         posts={posts}
         pagination={pagination}
         category={category}
@@ -165,6 +171,7 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
 }
 
 function EditorialArchive({
+  task,
   posts,
   pagination,
   category,
@@ -173,6 +180,7 @@ function EditorialArchive({
   basePath,
   label,
 }: {
+  task: TaskKey
   posts: SitePost[]
   pagination: SiteFeedPagination
   category: string
@@ -198,7 +206,9 @@ function EditorialArchive({
               </h1>
             </div>
             <p className="max-w-md border-l-4 border-[#c92f2f] pl-5 text-sm font-bold leading-7 text-black/65">
-              Timely reporting, sharp perspectives, and media-ready stories organized for fast discovery.
+              {task === 'mediaDistribution'
+                ? 'Press-ready campaigns, newsroom updates, and release archives organized for faster discovery and clearer publisher confidence.'
+                : 'Timely reporting, sharp perspectives, and media-ready stories organized for fast discovery.'}
             </p>
           </div>
         </section>
@@ -216,26 +226,34 @@ function EditorialArchive({
 
         {lead ? (
           <section className="mx-auto grid max-w-[var(--editable-container)] border-x border-black bg-white lg:grid-cols-[1.75fr_0.75fr]">
-            <Link href={`${basePath}/${lead.slug}`} className="group relative min-h-[34rem] overflow-hidden border-b border-black lg:border-b-0 lg:border-r">
+            <Link href={getArchiveHref(task, basePath, lead)} className="group relative min-h-[34rem] overflow-hidden border-b border-black lg:border-b-0 lg:border-r">
               <img src={getImage(lead)} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/15 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-9">
                 <span className="bg-[#c92f2f] px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em]">{getCategory(lead, label)}</span>
                 <h2 className="editorial-serif mt-5 max-w-4xl text-4xl font-black leading-[0.98] tracking-[-0.045em] sm:text-6xl">{lead.title}</h2>
                 <p className="mt-5 max-w-2xl line-clamp-2 text-sm font-semibold leading-7 text-white/80">{getSummary(lead)}</p>
+                {task === 'mediaDistribution' ? (
+                  <div className="mt-5 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/82">
+                    {getPublisher(lead) ? <span className="bg-white/12 px-3 py-2">{getPublisher(lead)}</span> : null}
+                    {getReach(lead) ? <span className="bg-white/12 px-3 py-2">{getReach(lead)} reach</span> : null}
+                    {getStatus(lead) ? <span className="bg-white/12 px-3 py-2">{getStatus(lead)}</span> : null}
+                  </div>
+                ) : null}
               </div>
             </Link>
             <div className="grid">
               <div className="border-b border-black bg-[#c92f2f] p-6 text-white">
-                <p className="text-xs font-black uppercase tracking-[0.24em]">Top stories</p>
-                <p className="editorial-serif mt-3 text-3xl font-black leading-tight">What the newsroom is watching now.</p>
+                <p className="text-xs font-black uppercase tracking-[0.24em]">{task === 'mediaDistribution' ? 'Campaign watch' : 'Top stories'}</p>
+                <p className="editorial-serif mt-3 text-3xl font-black leading-tight">{task === 'mediaDistribution' ? 'Active launches and distribution priorities.' : 'What the newsroom is watching now.'}</p>
               </div>
               {secondary.map((post, index) => (
-                <Link key={post.id || post.slug} href={`${basePath}/${post.slug}`} className="group grid grid-cols-[7rem_1fr] border-b border-black bg-white last:border-b-0">
+                <Link key={post.id || post.slug} href={getArchiveHref(task, basePath, post)} className="group grid grid-cols-[7rem_1fr] border-b border-black bg-white last:border-b-0">
                   <img src={getImage(post)} alt="" className="h-full min-h-40 w-full object-cover grayscale transition group-hover:grayscale-0" />
                   <div className="p-5">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c92f2f]">0{index + 1}</p>
                     <h3 className="editorial-serif mt-3 text-xl font-black leading-tight">{post.title}</h3>
+                    {task === 'mediaDistribution' ? <p className="mt-3 line-clamp-2 text-xs font-bold leading-6 text-black/60">{getPublisher(post) || getStatus(post) || getReach(post) || 'Media distribution update'}</p> : null}
                   </div>
                 </Link>
               ))}
@@ -258,7 +276,7 @@ function EditorialArchive({
           {remaining.length ? (
             <div className="grid border-l border-t border-black md:grid-cols-2 xl:grid-cols-3">
               {remaining.map((post, index) => (
-                <Link key={post.id || post.slug} href={`${basePath}/${post.slug}`} className="group border-b border-r border-black bg-white">
+                <Link key={post.id || post.slug} href={getArchiveHref(task, basePath, post)} className="group border-b border-r border-black bg-white">
                   <div className="aspect-[16/10] overflow-hidden bg-black">
                     <img src={getImage(post)} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
                   </div>
@@ -266,8 +284,16 @@ function EditorialArchive({
                     <div className="flex items-center justify-between gap-4 text-[10px] font-black uppercase tracking-[0.18em] text-[#c92f2f]">
                       <span>{getCategory(post, label)}</span><span>{String(index + 3).padStart(2, '0')}</span>
                     </div>
-                    <h3 className="editorial-serif mt-4 text-2xl font-black leading-[1.05]">{post.title}</h3>
-                    <p className="mt-4 line-clamp-3 text-sm leading-6 text-black/60">{getSummary(post)}</p>
+                    <h3 className="editorial-serif mt-4 line-clamp-3 break-words text-2xl font-black leading-[1.05]">{post.title}</h3>
+                    {task === 'mediaDistribution' ? (
+                      <div className="mt-4 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#005568]">
+                        {getPublisher(post) ? <span className="inline-flex items-center gap-2 bg-[#eef4f6] px-3 py-2"><RadioTower className="h-3.5 w-3.5" /> {getPublisher(post)}</span> : null}
+                        {getReach(post) ? <span className="bg-[#eef4f6] px-3 py-2">{getReach(post)}</span> : null}
+                        {getStatus(post) ? <span className="bg-[#f8ebe4] px-3 py-2 text-[#d94f2b]">{getStatus(post)}</span> : null}
+                      </div>
+                    ) : null}
+                    <p className="mt-4 line-clamp-3 break-words text-sm leading-6 text-black/60">{getSummary(post)}</p>
+                    {task === 'mediaDistribution' ? <span className="mt-5 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#10212f]">View campaign <ArrowRight className="h-4 w-4" /></span> : null}
                   </div>
                 </Link>
               ))}

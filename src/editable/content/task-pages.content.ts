@@ -11,12 +11,12 @@ export type TaskPageVoice = {
 
 export const taskPageVoices = {
   mediaDistribution: {
-    eyebrow: 'Media desk',
-    headline: 'Newsroom updates and media distribution built for fast public discovery.',
-    description: 'Publish announcements, company news, press coverage, and media updates across dynamic categories controlled by the master panel.',
-    filterLabel: 'Choose media category',
-    secondaryNote: 'Every category received from the master panel is supported automatically.',
-    chips: ['News Media', 'Dynamic categories', 'Press-ready'],
+    eyebrow: 'Distribution desk',
+    headline: 'Press release publishing and media distribution built for premium campaign visibility.',
+    description: 'Browse launch campaigns, newsroom-ready releases, partner updates, and publisher-facing announcements across the active media network.',
+    filterLabel: 'Choose campaign category',
+    secondaryNote: 'Every category received from the master panel stays available without changing backend or routing logic.',
+    chips: ['Press-ready', 'Campaign archive', 'Publisher reach'],
   },
   article: {
     eyebrow: 'Reading desk',
